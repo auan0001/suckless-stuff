@@ -159,7 +159,18 @@ getbattery(char *base)
 	if (remcap < 0 || descap < 0)
 		return smprintf("invalid");
 
-	return smprintf("%.0f%%%c", ((float)remcap / (float)descap) * 281.1, status);
+  return smprintf("%.0f%%%c", ((float)remcap / (float)descap) * 100, status);
+
+  /*int charge = ((float)remcap / (float)descap) * 100;*/
+  /*char alert[43] = "RECHARGE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";*/
+
+  /*if (charge <= 29)*/
+  /*{*/
+    /*status = 'R';*/
+    /*return smprintf("%.0f%%%c", charge, status);*/
+  /*}*/
+  /*else*/
+    /*return smprintf("%.0f%%%c", charge, status);*/
 }
 
 char *
@@ -191,7 +202,7 @@ main(void)
 		avgs = loadavg();
 		bat = getbattery("/sys/class/power_supply/BAT0");
 		bat1 = getbattery("/sys/class/power_supply/BAT1");
-		tmbln = mktimes("%W %a %d %b %H:%M %Y", tzberlin);
+		tmbln = mktimes("%Y %W %a %d %b %H:%M", tzberlin);
 
 		status = smprintf("L:%s B:%s|%s %s",
 				avgs, bat, bat1,

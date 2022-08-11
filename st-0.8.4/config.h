@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Hack Nerd Font Mono:style=Regular:pixelsize=32:antialias=true:autohint=true";
+static char *font = "Hack Nerd Font Mono:style=regular:pixelsize=19:antialias=true:autohint=true";
 static int borderpx = 2;
 
 /*

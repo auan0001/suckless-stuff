@@ -12,8 +12,11 @@ static const char *downvol[] = {"/usr/bin/pactl", "set-sink-volume", "@DEFAULT_S
                                 NULL};
 static const char *mutevol[] = {"/usr/bin/pactl", "set-sink-mute", "@DEFAULT_SINK@",
                                 "toggle", NULL};
+// pactl set-source-mute alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source toggle
+static const char *mutemic[] = {"/usr/bin/pactl", "set-source-mute", "alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source",
+                                "toggle", NULL};
 static const unsigned int borderpx = 2; /* border pixel of windows */
-static const unsigned int gappx = 10;    /* gaps between windows */
+static const unsigned int gappx = 17;    /* gaps between windows */
 static const unsigned int snap = 32;    /* snap pixel */
 static const int showbar = 1;           /* 0 means no bar */
 static const int topbar = 1;            /* 0 means bottom bar */
@@ -59,8 +62,8 @@ static const int resizehints =
 static const Layout layouts[] = {
     /* symbol     arrange function */
     {"[]=", tile}, /* first entry is default */
-    {"><>", NULL}, /* no layout function means floating behavior */
     {"[M]", monocle},
+    {"FLOAT", NULL}, /* no layout function means floating behavior */
 };
 
 /* key definitions */
@@ -88,23 +91,14 @@ static const char *termcmd[] = {"st", NULL};
 static Key keys[] = {
     /* modifier                     key r      function        argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
-    /* Swedish letters */
-    // {MODKEY, XK_bracketleft, spawn,  SHCMD("sleep 0.10 && xdotool key aring")}, 
-    // {MODKEY | ShiftMask, XK_bracketleft, spawn,  SHCMD("sleep 0.10 && xdotool key Aring")}, 
-    // {MODKEY, XK_apostrophe, spawn,  SHCMD("sleep 0.10 && xdotool key adiaeresis")}, 
-    // {MODKEY | ShiftMask, XK_apostrophe, spawn,  SHCMD("sleep 0.10 && xdotool key Adiaeresis")}, 
-    // {MODKEY, XK_semicolon, spawn, SHCMD("sleep 0.10 && xdotool key odiaeresis")},
-    // {MODKEY | ShiftMask, XK_semicolon, spawn,  SHCMD("sleep 0.10 && xdotool key Odiaeresis")}, 
-    /* End Swedish letters */
-
-    {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY, XK_b, spawn, SHCMD("firefox")},
-    {MODKEY, XK_e, spawn, SHCMD("emacsclient -n -c")},
-    {MODKEY, XK_n, spawn, SHCMD("st nvim")},
+    {MODKEY, XK_n, spawn, {.v = (const char*[]){ "st", "nvim", NULL}}},
+    // Prints keyboard layout to file. How to echo this into the statusbar?
+    // {MODKEY, XK_q, spawn, SHCMD("(setxkbmap -query | grep -q \"layout:\\s\\+us\") && setxkbmap se -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" || setxkbmap us -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" && setxkbmap -query | awk '$1 ~ /layout:/ { print $2 }' > ~/.keyboardlang")},
     {MODKEY, XK_q, spawn, SHCMD("(setxkbmap -query | grep -q \"layout:\\s\\+us\") && setxkbmap se -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" || setxkbmap us -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\"")},
     {MODKEY, XK_r, spawn, SHCMD("st ranger")},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
-    // {MODKEY, XK_b, togglebar, {0}},
+    {MODKEY | ShiftMask, XK_t, togglebar, {0}},
     {MODKEY | ShiftMask, XK_j, rotatestack, {.i = +1}},
     {MODKEY | ShiftMask, XK_k, rotatestack, {.i = -1}},
     {MODKEY, XK_j, focusstack, {.i = +1}},
@@ -135,6 +129,7 @@ static Key keys[] = {
     {0, XF86XK_AudioLowerVolume, spawn, {.v = downvol}},
     {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
     {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
+    {0, XF86XK_AudioMicMute, spawn, {.v = mutemic}},
     {MODKEY, XK_F5, spawn, {.v = downbright}},
     {MODKEY, XK_F6, spawn, {.v = upbright}},
     {MODKEY, XK_F1, spawn, {.v = mutevol}},

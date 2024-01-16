@@ -6,17 +6,21 @@
 /* appearance */
 static const char *upbright[] = {"/usr/bin/brightnessctl", "s", "+5%", NULL};
 static const char *downbright[] = {"/usr/bin/brightnessctl", "s", "5%-", NULL};
-static const char *upvol[] = {"/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%",
-                              NULL};
-static const char *downvol[] = {"/usr/bin/pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%",
-                                NULL};
-static const char *mutevol[] = {"/usr/bin/pactl", "set-sink-mute", "@DEFAULT_SINK@",
-                                "toggle", NULL};
-// pactl set-source-mute alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source toggle
-static const char *mutemic[] = {"/usr/bin/pactl", "set-source-mute", "alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source",
-                                "toggle", NULL};
+static const char *upvol[] = {"/usr/bin/pactl", "set-sink-volume",
+                              "@DEFAULT_SINK@", "+5%", NULL};
+static const char *downvol[] = {"/usr/bin/pactl", "set-sink-volume",
+                                "@DEFAULT_SINK@", "-5%", NULL};
+static const char *mutevol[] = {"/usr/bin/pactl", "set-sink-mute",
+                                "@DEFAULT_SINK@", "toggle", NULL};
+// pactl set-source-mute alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source
+// toggle
+static const char *mutemic[] = {
+    "/usr/bin/pactl", "set-source-mute",
+    "alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source", "toggle", NULL};
+// Monitor toggling from arch wiki using xrandr
+static const char *extmonitor[] = {"/home/auan/Scripts/Monitor/extmonitor.sh", NULL};
 static const unsigned int borderpx = 2; /* border pixel of windows */
-static const unsigned int gappx = 17;    /* gaps between windows */
+static const unsigned int gappx = 17;   /* gaps between windows */
 static const unsigned int snap = 32;    /* snap pixel */
 static const int showbar = 1;           /* 0 means no bar */
 static const int topbar = 1;            /* 0 means bottom bar */
@@ -68,16 +72,16 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask /* Mod1Mask is Alt key */
-#define TAGKEYS(KEY, TAG)                                        \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                         \
-      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}}, \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},          \
+#define TAGKEYS(KEY, TAG)                                                      \
+  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
+      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
+      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
       {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd)                                       \
-  {                                                      \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
+#define SHCMD(cmd)                                                             \
+  {                                                                            \
+    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
   }
 
 /* commands */
@@ -92,10 +96,18 @@ static Key keys[] = {
     /* modifier                     key r      function        argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY, XK_b, spawn, SHCMD("firefox")},
-    {MODKEY, XK_n, spawn, {.v = (const char*[]){ "st", "nvim", NULL}}},
+    {MODKEY, XK_n, spawn, {.v = (const char *[]){"st", "nvim", NULL}}},
     // Prints keyboard layout to file. How to echo this into the statusbar?
-    // {MODKEY, XK_q, spawn, SHCMD("(setxkbmap -query | grep -q \"layout:\\s\\+us\") && setxkbmap se -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" || setxkbmap us -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" && setxkbmap -query | awk '$1 ~ /layout:/ { print $2 }' > ~/.keyboardlang")},
-    {MODKEY, XK_q, spawn, SHCMD("(setxkbmap -query | grep -q \"layout:\\s\\+us\") && setxkbmap se -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" || setxkbmap us -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\"")},
+    // {MODKEY, XK_q, spawn, SHCMD("(setxkbmap -query | grep -q
+    // \"layout:\\s\\+us\") && setxkbmap se -option ctrl:nocaps && xmodmap -e
+    // \"add mod4 = Print\" || setxkbmap us -option ctrl:nocaps && xmodmap -e
+    // \"add mod4 = Print\" && setxkbmap -query | awk '$1 ~ /layout:/ { print $2
+    // }' > ~/.keyboardlang")},
+    {MODKEY, XK_q, spawn,
+     SHCMD(
+         "(setxkbmap -query | grep -q \"layout:\\s\\+us\") && setxkbmap se "
+         "-option ctrl:nocaps && xmodmap -e \"add mod4 = Print\" || setxkbmap "
+         "us -option ctrl:nocaps && xmodmap -e \"add mod4 = Print\"")},
     {MODKEY, XK_r, spawn, SHCMD("st ranger")},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY | ShiftMask, XK_t, togglebar, {0}},
@@ -130,6 +142,7 @@ static Key keys[] = {
     {0, XF86XK_AudioMute, spawn, {.v = mutevol}},
     {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
     {0, XF86XK_AudioMicMute, spawn, {.v = mutemic}},
+    {0, XF86XK_Display, spawn, {.v = extmonitor}},
     {MODKEY, XK_F5, spawn, {.v = downbright}},
     {MODKEY, XK_F6, spawn, {.v = upbright}},
     {MODKEY, XK_F1, spawn, {.v = mutevol}},
@@ -158,4 +171,3 @@ static Button buttons[] = {
     {ClkTagBar, MODKEY, Button1, tag, {0}},
     {ClkTagBar, MODKEY, Button3, toggletag, {0}},
 };
-

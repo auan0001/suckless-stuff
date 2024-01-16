@@ -146,24 +146,11 @@ char *getbattery(char *base) {
     return smprintf("invalid");
   }
 
-  int charge = ((float)remcap / (float)descap) * full; 
+  float charge = ((float)remcap / (float)descap) * full;
 
-  if (charge > full) {
-  return smprintf("%.0f%%%c", full, status);
-  } else {
-    return smprintf("%.0f%%%c", charge, status);
-  }
-
-  /*int charge = ((float)remcap / (float)descap) * 100;*/
-  /*char alert[43] = "RECHARGE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";*/
-
-  /*if (charge <= 29)*/
-  /*{*/
-  /*status = 'R';*/
-  /*return smprintf("%.0f%%%c", charge, status);*/
-  /*}*/
-  /*else*/
-  /*return smprintf("%.0f%%%c", charge, status);*/
+  return smprintf("%.0f%%%c",
+                  (charge >= 0 && charge <= (float)full) ? charge : (float)full,
+                  status);
 }
 
 char *gettemperature(char *base, char *sensor) {

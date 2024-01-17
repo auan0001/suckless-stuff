@@ -19,6 +19,7 @@ static const char *mutemic[] = {
     "alsa_input.pci-0000_07_00.6.HiFi__hw_Generic_1__source", "toggle", NULL};
 // Monitor toggling from arch wiki using xrandr
 static const char *extmonitor[] = {"/home/auan/Scripts/Monitor/extmonitor.sh", NULL};
+static const char *slock[] = {"slock", NULL};
 static const unsigned int borderpx = 2; /* border pixel of windows */
 static const unsigned int gappx = 17;   /* gaps between windows */
 static const unsigned int snap = 32;    /* snap pixel */
@@ -143,6 +144,7 @@ static Key keys[] = {
     {0, XF86XK_AudioRaiseVolume, spawn, {.v = upvol}},
     {0, XF86XK_AudioMicMute, spawn, {.v = mutemic}},
     {0, XF86XK_Display, spawn, {.v = extmonitor}},
+    {0, XF86XK_Favorites, spawn, {.v = slock}},
     {MODKEY, XK_F5, spawn, {.v = downbright}},
     {MODKEY, XK_F6, spawn, {.v = upbright}},
     {MODKEY, XK_F1, spawn, {.v = mutevol}},

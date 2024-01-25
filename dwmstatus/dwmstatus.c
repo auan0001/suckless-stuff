@@ -162,11 +162,53 @@ char *gettemperature(char *base, char *sensor) {
   return smprintf("%02.0f°C", atof(co) / 1000);
 }
 
+// Function to execute a command and capture its output
+char* execute_command(const char* command) {
+  static char result[120];  // Static buffer
+
+  FILE* fp = popen(command, "r");
+  if (fp == NULL) {
+    perror("popen");
+    exit(EXIT_FAILURE);
+  }
+
+  if (fgets(result, sizeof(result), fp) != NULL) {
+    // Remove trailing newline characters
+    char* newline = strchr(result, '\n');
+    if (newline != NULL) {
+      *newline = '\0';
+    }
+  }
+
+  pclose(fp);
+
+  return result;
+}
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
+}
+
 int main(void) {
   char *status;
   char *avgs;
   char *bat;
-  char *bat1;
   char *tmbln;
 
   if (!(dpy = XOpenDisplay(NULL))) {
@@ -174,18 +216,21 @@ int main(void) {
     return 1;
   }
 
-  for (;; sleep(5)) {
+  for (;; sleep(2)) {
     avgs = loadavg();
     bat = getbattery("/sys/class/power_supply/BAT0");
-    bat1 = getbattery("/sys/class/power_supply/BAT1");
     tmbln = mktimes("%Y %W %a %d %b %H:%M", tzberlin);
+    char* keyb_layout = execute_command("setxkbmap -query | grep -oP 'layout:\\K.*'");
+    // For debugging:
+    // printf("Keyboard Layout: %s\n", execute_command("setxkbmap -query | grep -oP 'layout:\\K.*'"));
 
-    status = smprintf("L:%s B:%s|%s %s", avgs, bat, bat1, tmbln);
+    keyb_layout = trimwhitespace(keyb_layout);
+
+    status = smprintf("L:%s B:%s| %s |%s", avgs, bat, keyb_layout, tmbln);
     setstatus(status);
 
     free(avgs);
     free(bat);
-    free(bat1);
     free(tmbln);
     free(status);
   }

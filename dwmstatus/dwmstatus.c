@@ -3,6 +3,7 @@
  * by 20h
  */
 
+#include <ctype.h>
 #include <math.h>
 #define _BSD_SOURCE
 #include <stdarg.h>
@@ -205,6 +206,15 @@ char *trimwhitespace(char *str)
   return str;
 }
 
+char *caps(char *str) {
+  char buf[strlen(str)];
+  for (int i = 0; i < strlen(str); i++) {
+    buf[i] = toupper(str[i]);
+  }
+  str = buf;
+  return str;
+}
+
 int main(void) {
   char *status;
   char *avgs;
@@ -221,12 +231,16 @@ int main(void) {
     bat = getbattery("/sys/class/power_supply/BAT0");
     tmbln = mktimes("%Y %W %a %d %b %H:%M", tzberlin);
     char* keyb_layout = execute_command("setxkbmap -query | grep -oP 'layout:\\K.*'");
+    char keyb_layout_caps[strlen(keyb_layout)];
+
+    keyb_layout = caps(keyb_layout);
+
     // For debugging:
-    // printf("Keyboard Layout: %s\n", execute_command("setxkbmap -query | grep -oP 'layout:\\K.*'"));
+    // printf("Keyboard Layout: %s\n", caps(execute_command("setxkbmap -query | grep -oP 'layout:\\K.*'")));
 
     keyb_layout = trimwhitespace(keyb_layout);
 
-    status = smprintf("L:%s B:%s| %s |%s", avgs, bat, keyb_layout, tmbln);
+    status = smprintf("L:%s B:%s| %s | %s", avgs, bat, keyb_layout, tmbln);
     setstatus(status);
 
     free(avgs);
